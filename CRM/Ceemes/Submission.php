@@ -32,7 +32,13 @@ class CRM_Ceemes_Submission {
       'gender_id' => NULL,
     );
 
-    // TODO: Parse prefix and gender out of the given greeting.
+    $prefixes = civicrm_api3('OptionValue', 'get', array('option_group_id' => 'individual_prefix'));
+    // TODO: Parse (prefix and) gender out of the given greeting.
+    // Possible values:
+    // array(
+    //   'Sehr geehrte Frau',
+    //   'Sehr geehrter Herr',
+    // );
 
     return $result;
   }

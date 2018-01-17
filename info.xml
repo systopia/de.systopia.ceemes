@@ -14,7 +14,7 @@
     <url desc="Support">https://github.com/systopia/de.systopia.ceemes/issues</url>
     <url desc="Licensing">http://www.gnu.org/licenses/agpl-3.0.html</url>
   </urls>
-  <releaseDate>2018-01-16</releaseDate>
+  <releaseDate>2018-01-17</releaseDate>
   <version>0.1.dev</version>
   <develStage>dev</develStage>
   <compatibility>

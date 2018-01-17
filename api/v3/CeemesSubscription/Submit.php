@@ -23,17 +23,11 @@
  */
 function civicrm_api3_ceemes_subscription_submit($params) {
   try {
-    // Translate parameter "idx" into custom field "Ceemes_ID".
-    $idx_field = civicrm_api3('CustomField', 'get', array('name' => 'Ceemes_ID'));
-    if ($idx_field['count'] != 1) {
-      throw new CiviCRM_API3_Exception('Custom field "Ceemes_ID" not found.', 0);
-    }
-
     // Translate parameters into CiviCRM field names.
     foreach (array(
                'firstname' => 'first_name',
                'lastname' => 'last_name',
-               'idx' => 'custom_' . $idx_field['id'],
+               'idx' => 'external_identifier',
              ) as $parameter => $field_name) {
       $params[$field_name] = $params[$parameter];
       unset($params[$parameter]);
@@ -64,7 +58,7 @@ function civicrm_api3_ceemes_subscription_submit($params) {
 
     // Find or create contact using XCM.
     $contact_data = array_intersect_key($params, array_flip(array(
-      'custom_' . $idx_field['id'],
+      'external_identifier',
       'email',
       'first_name',
       'last_name',

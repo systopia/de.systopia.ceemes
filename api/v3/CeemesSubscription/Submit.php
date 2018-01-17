@@ -97,11 +97,11 @@ function civicrm_api3_ceemes_subscription_submit($params) {
     ));
 
     // Return the result.
-    return civicrm_api3_create_success(array(
+    return civicrm_api3_create_success(array(array(
       'contact_id' => $contact_id,
       'group_id' => $group_id,
       'status' => $group_contact,
-    ));
+    )));
   }
   catch (CiviCRM_API3_Exception $exception) {
     return civicrm_api3_create_error($exception->getMessage());
@@ -139,7 +139,8 @@ function _civicrm_api3_ceemes_subscription_submit_spec(&$params) {
     'name' => 'email',
     'title' => 'E-mail address',
     'type' => CRM_Utils_Type::T_STRING,
-    'api.required' => 0, // TODO: Is required for first call for this contact.
+    // Required for creating contact, will be handled by the Contact API.
+    'api.required' => 0,
     'description' => 'The subscriber\'s e-mail address.',
   );
   $params['firstname'] = array(

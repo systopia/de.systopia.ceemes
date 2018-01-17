@@ -22,45 +22,90 @@
  * @return array
  */
 function civicrm_api3_ceemes_subscription_submit($params) {
-  // Translate parameters.
   try {
+    // Translate parameter "idx" into custom field "Ceemes_ID".
     $idx_field = civicrm_api3('CustomField', 'get', array('name' => 'Ceemes_ID'));
     if ($idx_field['count'] != 1) {
       throw new CiviCRM_API3_Exception('Custom field "Ceemes_ID" not found.', 0);
     }
+
+    // Translate parameters into CiviCRM field names.
+    foreach (array(
+               'firstname' => 'first_name',
+               'lastname' => 'last_name',
+               'idx' => 'custom_' . $idx_field['id'],
+             ) as $parameter => $field_name) {
+      $params[$field_name] = $params[$parameter];
+      unset($params[$parameter]);
+    }
+
+    // Determine gender from the given greeting.
+    if (!empty($params['greeting'])) {
+      $female_gender = civicrm_api3('OptionValue', 'get', array(
+        'option_group_id' => 'gender',
+        'name' => 'Female',
+      ));
+      $male_gender = civicrm_api3('OptionValue', 'get', array(
+        'option_group_id' => 'gender',
+        'name' => 'Male',
+      ));
+      switch ($params['greeting']) {
+        case 'Sehr geehrter Herr':
+          $params['gender_id'] = $male_gender['id'];
+          break;
+        case 'Sehr geehrte Frau':
+          $params['gender_id'] = $female_gender['id'];
+          break;
+        default:
+          throw new CiviCRM_API3_Exception('Could not determine gender from the given greeting.', 0);
+          break;
+      }
+    }
+
+    // Find or create contact using XCM.
+    $contact_data = array_intersect_key($params, array_flip(array(
+      'custom_' . $idx_field['id'],
+      'email',
+      'first_name',
+      'last_name',
+      'gender_id',
+    )));
+    $contact_result = civicrm_api3('Contact', 'getorcreate', $contact_data);
+    if ($contact_result['count'] == 1) {
+      $contact_id = $contact_result['id'];
+    }
+    else {
+      throw new CiviCRM_API3_Exception('Could not find a distinct contact for the given contact data.', 0);
+    }
+
+    // Add group membership with subscribed status.
+    switch ($params['cgid']) {
+      case 55:
+        $group_id = 2;
+        break;
+      default:
+        throw new CiviCRM_API3_Exception('Could not match given group ID.', 0);
+        break;
+    }
+    if (!in_array($params['subscribed'], array('t', 'f'))) {
+      throw new CiviCRM_API3_Exception('Unknown value for parameter "subscribed"', 0);
+    }
+    $group_contact = civicrm_api3('GroupContact', 'create', array(
+      'group_id' => $group_id,
+      'contact_id' => $contact_id,
+      'status' => ($params['subscribed'] == 't' ? 'Added' : 'Removed'),
+    ));
+
+    // Return the result.
+    return civicrm_api3_create_success(array(
+      'contact_id' => $contact_id,
+      'group_id' => $group_id,
+      'status' => $group_contact,
+    ));
   }
   catch (CiviCRM_API3_Exception $exception) {
     return civicrm_api3_create_error($exception->getMessage());
   }
-  foreach (array(
-    'firstname' => 'first_name',
-    'lastname' => 'last_name',
-    'idx' => 'custom_' . $idx_field['id'],
-           ) as $parameter => $field_name) {
-    $params[$field_name] = $params[$parameter];
-    unset($params[$parameter]);
-  }
-  if (!empty($params['greeting'])) {
-    $params += CRM_Ceemes_Submission::parseGreeting($params['greeting']);
-  }
-
-  // Find or create contact using XCM.
-  $contact_data = array_intersect_key($params, array_flip(array(
-    'custom_' . $idx_field['id'],
-    'email',
-    'first_name',
-    'last_name',
-    'prefix_id',
-    'gender_id',
-  )));
-  try {
-    $contact_id = civicrm_api3('Contact', 'getorcreate', $contact_data);
-  }
-  catch (CiviCRM_API3_Exception $exception) {
-    return civicrm_api3_create_error($exception->getMessage());
-  }
-
-  // TODO: Add group membership with subscribed status.
 }
 
 /**

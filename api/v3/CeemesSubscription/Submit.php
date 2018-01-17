@@ -35,20 +35,12 @@ function civicrm_api3_ceemes_subscription_submit($params) {
 
     // Determine gender from the given greeting.
     if (!empty($params['greeting'])) {
-      $female_gender = civicrm_api3('OptionValue', 'get', array(
-        'option_group_id' => 'gender',
-        'name' => 'Female',
-      ));
-      $male_gender = civicrm_api3('OptionValue', 'get', array(
-        'option_group_id' => 'gender',
-        'name' => 'Male',
-      ));
       switch ($params['greeting']) {
         case 'Sehr geehrter Herr':
-          $params['gender_id'] = $male_gender['id'];
+          $params['gender_id'] = 'Male';
           break;
         case 'Sehr geehrte Frau':
-          $params['gender_id'] = $female_gender['id'];
+          $params['gender_id'] = 'Female';
           break;
         default:
           throw new CiviCRM_API3_Exception('Could not determine gender from the given greeting.', 0);

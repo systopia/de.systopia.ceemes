@@ -14,6 +14,8 @@
 | written permission from the original author(s).     |
 +-----------------------------------------------------*/
 
+define('CEEMES_SUBSCRIPTION_GROUP_ID', 2);
+
 /**
  * API callback for "submit" call on "CeemesSubscription" entity.
  *
@@ -72,7 +74,7 @@ function civicrm_api3_ceemes_subscription_submit($params) {
     // Add group membership with subscribed status.
     switch ($params['cgid']) {
       case 55:
-        $group_id = 2;
+        $group_id = CEEMES_SUBSCRIPTION_GROUP_ID;
         break;
       default:
         throw new CiviCRM_API3_Exception('Could not match given group ID.', 0);

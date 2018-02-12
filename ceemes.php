@@ -55,6 +55,11 @@ function ceemes_civicrm_uninstall() {
  */
 function ceemes_civicrm_enable() {
   _ceemes_civix_civicrm_enable();
+
+  // Make sure our custom fields exist.
+  require_once 'CRM/Ceemes/CustomData.php';
+  $customData = new CRM_Ceemes_CustomData('de.systopia.ceemes');
+  $customData->syncCustomGroup(__DIR__ . '/resources/custom_group_ceemes.json');
 }
 
 /**

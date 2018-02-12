@@ -29,10 +29,27 @@ function civicrm_api3_ceemes_subscription_submit($params) {
     foreach (array(
                'firstname' => 'first_name',
                'lastname' => 'last_name',
-               'idx' => 'external_identifier',
              ) as $parameter => $field_name) {
-      $params[$field_name] = $params[$parameter];
-      unset($params[$parameter]);
+      if (isset($params[$parameter])) {
+        $params[$field_name] = $params[$parameter];
+        unset($params[$parameter]);
+      }
+    }
+
+    // Prepare field "Ceemes ID".
+    if (!empty($params['idx'])) {
+      $ceemes_id_field = civicrm_api3('CustomField', 'get', array(
+        'sequential' => 1,
+        'name' => "ceemes_id",
+      ));
+      if ($ceemes_id_field['count'] == 1) {
+        $ceemes_id_field_name = 'custom_' . $ceemes_id_field['id'];
+        $params[$ceemes_id_field_name] = $params['idx'];
+        unset($params['idx']);
+      }
+      else {
+        throw new CiviCRM_API3_Exception('Could not find custom field for Ceemes ID.', 0);
+      }
     }
 
     // Determine gender from the given greeting.
@@ -57,7 +74,7 @@ function civicrm_api3_ceemes_subscription_submit($params) {
 
     // Find or create contact using XCM.
     $contact_data = array_intersect_key($params, array_flip(array(
-      'external_identifier',
+      $ceemes_id_field_name,
       'email',
       'first_name',
       'last_name',

@@ -14,7 +14,7 @@
 | written permission from the original author(s).     |
 +-----------------------------------------------------*/
 
-define('CEEMES_SUBSCRIPTION_GROUP_ID', 2);
+define('CEEMES_SUBSCRIPTION_GROUP_ID', 3);
 
 /**
  * API callback for "submit" call on "CeemesSubscription" entity.

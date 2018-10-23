@@ -1,44 +1,33 @@
-# de.systopia.ceemes
+# CEEMES API
 
-![Screenshot](/images/screenshot.png)
+API extension for portrix.net's CEEMES framework.
 
-(*FIXME: In one or two paragraphs, describe what the extension does and why one would download it. *)
+## Features
 
-The extension is licensed under [AGPL-3.0](LICENSE.txt).
+Currently, there is an API for Newsletter subscription submissions to be
+registered as group memberships in CiviCRM.
 
-## Requirements
+There is a dependency on the
+[Extended Contact Matcher (XCM) extension](https://github.com/systopia/de.systopia.xcm)
+to match existing contacts or create new ones.
 
-* PHP v5.4+
-* CiviCRM (4.6)
+### CeemesSubscription.Submit API action
 
-## Installation (Web UI)
+This API action registers Newsletter subscriptions as group memberships of
+contacts.
 
-This extension has not yet been published for installation via the web UI.
+* Entity: `CeemesSubscription`
+* action: `Submit`
 
-## Installation (CLI, Zip)
+The action accepts the following parameters:
 
-Sysadmins and developers may download the `.zip` file for this extension and
-install it with the command-line tool [cv](https://github.com/civicrm/cv).
-
-```bash
-cd <extension-dir>
-cv dl de.systopia.ceemes@https://github.com/systopia/de.systopia.ceemes/archive/master.zip
-```
-
-## Installation (CLI, Git)
-
-Sysadmins and developers may clone the [Git](https://en.wikipedia.org/wiki/Git) repo for this extension and
-install it with the command-line tool [cv](https://github.com/civicrm/cv).
-
-```bash
-git clone https://github.com/systopia/de.systopia.ceemes.git
-cv en ceemes
-```
-
-## Usage
-
-(* FIXME: Where would a new user navigate to get started? What changes would they see? *)
-
-## Known Issues
-
-(* FIXME *)
+| Parameter    | Type    | Description                      | Values/Format                                       | Required                                   | Notes                                                            |
+|--------------|---------|----------------------------------|-----------------------------------------------------|--------------------------------------------|------------------------------------------------------------------|
+| <nobr>`idx`</nobr>        | Integer | CEEMES subscriber ID             | unsigned                                            | Yes                                        | Mapped to a custom field `ceemes_id`                             |
+| <nobr>`cgid`</nobr>       | Integer | CEEMES newsletter group ID       | unsigned                                            | Yes                                        | CiviCRM Group ID as defined as a PHP constant in the code        |
+| <nobr>`cgname`</nobr>     | String  | CEEMES newletter group name      |                                                     |                                            | Not processed.                                                   |
+| <nobr>`email`</nobr>      | String  | CEEMES subscriber e-mail address | valid e-mail address                                | Yes, or one of `first_name` and `lastname` | E-mail address of the CiviCRM contact                            |
+| <nobr>`firstname`</nobr>  | String  | CEEMES subscriber first name     |                                                     | Yes, or one of `email` and `lastname`      | First name of the CiviCRM contact                                |
+| <nobr>`lastname`</nobr>   | String  | CEEMES subscriber last name      |                                                     | Yes, or one of `email` and `firstname`     | Last name of the CiviCRM contact                                 |
+| <nobr>`greeting`</nobr>   | String  | CEEMES subscriber greeting       | one of `Sehr geehrte Frau` and `Sehr geehrter Herr` |                                            | Gender and greeting will be derived from a mapping               |
+| <nobr>`subscribed`</nobr> | String  | CEEMES subscription status       | one of `t` (subscribed) and `f` (unsubscribed)      | Yes                                        | Mapped to CiviCRM group membership status (`Added` or `Removed`) |

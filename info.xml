@@ -21,11 +21,16 @@
     <ver>4.6</ver>
     <ver>4.7</ver>
   </compatibility>
-  <comments></comments>
+  <comments/>
   <requires>
     <ext>de.systopia.xcm</ext>
   </requires>
   <civix>
     <namespace>CRM/Ceemes</namespace>
+    <format>23.02.1</format>
   </civix>
+  <classloader>
+    <psr0 prefix="CRM_" path="."/>
+    <psr4 prefix="Civi\" path="Civi"/>
+  </classloader>
 </extension>
